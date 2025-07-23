@@ -4,12 +4,11 @@ const ProductPrice = ({
   value,
   className,
 }: {
-  value: number;
+  value: string;
   className?: string;
 }) => {
   const stringValue = value;
   const [intValue, floatValue] = stringValue.split('.');
-// Закінчи в на 24 ; 4:00
   return (
     <p className={cn('text-2xl', className)}>
       <span className='text-xs align-super'>$</span>

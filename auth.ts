@@ -2,6 +2,8 @@ import { compareSync } from 'bcrypt-ts-edge';
 import type { NextAuthConfig } from 'next-auth';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 import { prisma } from '@/db/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
@@ -67,7 +69,6 @@ export const config = {
     async jwt({ token, user, trigger, session }: any) {
       // Assign user fields to token
       if (user) {
-        console.log(user);
         token.role = user.role;
 
         // If user has no name, use email as their default name
@@ -87,7 +88,6 @@ export const config = {
         token.name = session.user.name;
       }
 
-      console.log(token);
       return token;
     },
   },

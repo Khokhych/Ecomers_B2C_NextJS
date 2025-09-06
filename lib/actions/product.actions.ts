@@ -21,3 +21,4 @@ export async function getProductBySlug(slug: string) {
     where: { slug: slug },
   });
 }
+

@@ -43,7 +43,7 @@ const PaymentMethodForm = ({
       const res = await updateUserPaymentMethod(values);
 
       if (!res.success) {
-        toast.error(res.message);
+        toast['error'](res.message);
         return;
       }
 
@@ -53,6 +53,7 @@ const PaymentMethodForm = ({
 
   return (
     <>
+      <CheckoutSteps current={2} />
       <div className='max-w-md mx-auto'>
         <Form {...form}>
           <form

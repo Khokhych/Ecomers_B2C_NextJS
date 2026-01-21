@@ -10,14 +10,21 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-// import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
 import { Order } from '@/types';
+import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import Image from 'next/image';
 import Link from 'next/link';
+import { approvePayPalOrder, createPayPalOrder } from '@/lib/actions/order.actions';
 
-const OrderDetailsTable = ({ order }: { order: Order }) => {
-  // const { toast } = useToast();
+const OrderDetailsTable = ({
+  order,
+  paypalClientId,
+  }: {
+    order: Order;
+    paypalClientId: string;
+  }) => {
 
   const {
     shippingAddress,
@@ -33,78 +40,107 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
     deliveredAt,
   } = order;
 
+  // Checks the loading status of the PayPal script
+  function PrintLoadingState() {
+    const [{ isPending, isRejected }] = usePayPalScriptReducer();
+    let status = '';
+    if (isPending) {
+      status = 'Loading PayPal...';
+    } else if (isRejected) {
+      status = 'Error in loading PayPal.';
+    }
+    return status;
+  }
+
+  // Creates a PayPal order
+  const handleCreatePayPalOrder = async () => {
+    const res = await createPayPalOrder(order.id);
+    if (!res.success)
+      return toast.error(res.message);
+    return res.data;
+  };
+
+  // Approves a PayPal order
+  const handleApprovePayPalOrder = async (data: { orderID: string }) => {
+    const res = await approvePayPalOrder(order.id, data);
+    toast[res.success ? 'success' : 'error'](res.message);
+  };
+
   return (
     <>
       <h1 className='py-4 text-2xl'> Order {formatId(order.id)}</h1>
       <div className='grid md:grid-cols-3 md:gap-5'>
-        <Card>
-          <CardContent className='p-4 gap-4'>
-            <h2 className='text-xl pb-4'>Payment Method</h2>
-            <p>{paymentMethod}</p>
-            {isPaid ? (
-              <Badge variant='secondary'>
-                Paid at {formatDateTime(paidAt!).dateTime}
-              </Badge>
-            ) : (
-              <Badge variant='destructive'>Not paid</Badge>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className='p-4 gap-4'>
-            <h2 className='text-xl pb-4'>Shipping Address</h2>
-            <p>{shippingAddress.fullName}</p>
-            <p>
-              {shippingAddress.streetAddress}, {shippingAddress.city},{' '}
-              {shippingAddress.postalCode}, {shippingAddress.country}{' '}
-            </p>
-            {isDelivered ? (
-              <Badge variant='secondary'>
-                Delivered at {formatDateTime(deliveredAt!).dateTime}
-              </Badge>
-            ) : (
-              <Badge variant='destructive'>Not delivered</Badge>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className='p-4 gap-4'>
-            <h2 className='text-xl pb-4'>Order Items</h2>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Item</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Price</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orderItems.map((item) => (
-                  <TableRow key={item.slug}>
-                    <TableCell>
-                      <Link
-                        href={`/product/${item.slug}`}
-                        className='flex items-center'
-                      >
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          width={50}
-                          height={50}
-                        ></Image>
-                        <span className='px-2'>{item.name}</span>
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <span className='px-2'>{item.qty}</span>
-                    </TableCell>
-                    <TableCell className='text-right'>${item.price}</TableCell>
+        <div className="md:col-span-2 space-y-4">
+          <Card>
+            <CardContent className='p-4 gap-4'>
+              <h2 className='text-xl pb-4'>Payment Method</h2>
+              <p>{paymentMethod}</p>
+              {isPaid ? (
+                <Badge variant='secondary'>
+                  Paid at {formatDateTime(paidAt!).dateTime}
+                </Badge>
+              ) : (
+                <Badge variant='destructive'>Not paid</Badge>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className='p-4 gap-4'>
+              <h2 className='text-xl pb-4'>Shipping Address</h2>
+              <p>{shippingAddress.fullName}</p>
+              <p>
+                {shippingAddress.streetAddress}, {shippingAddress.city},{' '}
+                {shippingAddress.postalCode}, {shippingAddress.country}{' '}
+              </p>
+              {isDelivered ? (
+                <Badge variant='secondary'>
+                  Delivered at {formatDateTime(deliveredAt!).dateTime}
+                </Badge>
+              ) : (
+                <Badge variant='destructive'>Not delivered</Badge>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className='p-4 gap-4'>
+              <h2 className='text-xl pb-4'>Order Items</h2>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Item</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead>Price</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                </TableHeader>
+                <TableBody>
+                  {orderItems.map((item) => (
+                    <TableRow key={item.slug}>
+                      <TableCell>
+                        <Link
+                          href={`/product/${item.slug}`}
+                          className='flex items-center'
+                        >
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            width={50}
+                            height={50}
+                          ></Image>
+                          <span className='px-2'>{item.name}</span>
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <span className='px-2'>{item.qty}</span>
+                      </TableCell>
+                      <TableCell className='text-right'>${item.price}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+          {/* Order Summary */}
+        </div>
         <div>
           <Card>
             <CardContent className='p-4 space-y-4 gap-4'>
@@ -125,6 +161,20 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
+              {
+                /* PayPal Payment */
+              }
+              {!isPaid && paymentMethod === 'PayPal' && (
+                  <div>
+                    <PayPalScriptProvider options={{ clientId: paypalClientId }}>
+                      <PrintLoadingState />
+                      <PayPalButtons
+                        createOrder={handleCreatePayPalOrder}
+                        onApprove={handleApprovePayPalOrder}
+                      />
+                    </PayPalScriptProvider>
+                  </div>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -22,5 +22,3 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
-
-// Закінчив 5- 48 кфнець, потрібно взят и інфу з документа і прописати в файлах і затестити

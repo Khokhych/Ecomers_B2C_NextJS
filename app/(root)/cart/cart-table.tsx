@@ -1,6 +1,6 @@
 'use client';
 
-import { Cart } from '@/types';
+import { Cart, CartItem } from '@/types';
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { addItemToCart, removeItemFromCart } from '@/lib/actions/cart.actions';
@@ -43,7 +43,7 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {cart.items.map((item) => (
+                {(cart.items as CartItem[]).map((item: CartItem) => (
                   <TableRow key={item.slug}>
                     <TableCell>
                       <Link href={`/product/${item.slug}`} className='flex items-center'>
@@ -93,7 +93,7 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
                         )}
                       </Button>
                     </TableCell>
-                    <TableCell className='text-right'>{formatCurrency(item.price * item.qty)}</TableCell>
+                    <TableCell className='text-right'>{formatCurrency(Number(item.price) * item.qty)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -102,7 +102,7 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
           <Card>
             <CardContent className='p-4   gap-4'>
               <div className='pb-3 text-xl'>
-                Subtotal ({cart.items.reduce((a: any, c: { qty: any; }) => a + c.qty, 0)}):
+                Subtotal ({(cart.items as CartItem[]).reduce((a: number, c: CartItem) => a + c.qty, 0)}):
                 {formatCurrency(cart.itemsPrice)}
               </div>
               <Button

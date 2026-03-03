@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table';
 import { toast } from 'sonner';
 import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
-import { Order } from '@/types';
+import { Order, OrderItem } from '@/types';
 import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -158,7 +158,7 @@ const OrderDetailsTable = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orderItems.map((item) => (
+                  {orderItems.map((item: OrderItem) => (
                     <TableRow key={item.slug}>
                       <TableCell>
                         <Link

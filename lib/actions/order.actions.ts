@@ -7,7 +7,7 @@ import { getMyCart } from './cart.actions';
 import { getUserById } from './user.actions';
 import { insertOrderSchema } from '../validators';
 import { prisma } from '@/db/prisma';
-import { CartItem, PaymentResult } from '@/types';
+import { CartItem, Order, PaymentResult } from '@/types';
 import { convertToPlainObject } from '../utils';
 import { revalidatePath } from 'next/cache';
 import { paypal } from '../paypal';
@@ -91,7 +91,7 @@ export async function getOrderById(orderId: string) {
       user: { select: { name: true, email: true } },
     },
   });
-  return convertToPlainObject(data);
+  return convertToPlainObject(data) as Order | null;
 }
 
 // Create Paypal Order

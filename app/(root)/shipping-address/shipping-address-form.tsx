@@ -22,7 +22,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Loader } from 'lucide-react';
-import CheckoutSteps from '@/components/shared/checkout-steps';
 
 const ShippingAddressForm = ({
   address,

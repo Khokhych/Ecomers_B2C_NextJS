@@ -92,9 +92,12 @@ export async function getUserById(userId: string) {
 export async function updateUserAddress(data: ShippingAddress) {
   try {
     const session = await auth();
+    if (!session?.user?.id) {
+      throw new Error('User not found');
+    }
 
     const currentUser = await prisma.user.findFirst({
-      where: { id: session?.user?.id! },
+      where: { id: session.user.id },
     });
 
     if (!currentUser) throw new Error('User not found');

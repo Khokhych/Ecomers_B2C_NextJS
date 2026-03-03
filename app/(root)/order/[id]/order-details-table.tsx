@@ -16,14 +16,23 @@ import { Order } from '@/types';
 import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import Image from 'next/image';
 import Link from 'next/link';
-import { approvePayPalOrder, createPayPalOrder } from '@/lib/actions/order.actions';
+import {
+  approvePayPalOrder,
+  createPayPalOrder,
+  deliverOrder,
+  updateOrderToPaidByCOD,
+} from '@/lib/actions/order.actions';
+import { useTransition } from 'react';
+import { Button } from '@/components/ui/button';
 
 const OrderDetailsTable = ({
   order,
   paypalClientId,
+  isAdmin
   }: {
     order: Order;
     paypalClientId: string;
+    isAdmin: boolean;
   }) => {
 
   const {
@@ -64,6 +73,42 @@ const OrderDetailsTable = ({
   const handleApprovePayPalOrder = async (data: { orderID: string }) => {
     const res = await approvePayPalOrder(order.id, data);
     toast[res.success ? 'success' : 'error'](res.message);
+  };
+
+  const MarkAsPaidButton = () => {
+    const [isPending, startTransition] = useTransition();
+    return (
+      <Button
+        type='button'
+        disabled={isPending}
+        onClick={() =>
+          startTransition(async () => {
+            const res = await updateOrderToPaidByCOD(order.id);
+            toast[res.success ? 'success' : 'error'](res.message);
+          })
+        }
+      >
+        {isPending ? 'processing...' : 'Mark As Paid'}
+      </Button>
+    );
+  };
+
+  const MarkAsDeliveredButton = () => {
+    const [isPending, startTransition] = useTransition();
+    return (
+      <Button
+        type='button'
+        disabled={isPending}
+        onClick={() =>
+          startTransition(async () => {
+            const res = await deliverOrder(order.id);
+            toast[res.success ? 'success' : 'error'](res.message);
+          })
+        }
+      >
+        {isPending ? 'processing...' : 'Mark As Delivered'}
+      </Button>
+    );
   };
 
   return (
@@ -175,6 +220,17 @@ const OrderDetailsTable = ({
                     </PayPalScriptProvider>
                   </div>
               )}
+              {
+                /* Cash On Delivery */
+              }
+              {
+                isAdmin && !isPaid && paymentMethod === 'CashOnDelivery' && (
+                  <MarkAsPaidButton />
+                )
+              }
+              {
+                isAdmin && isPaid && !isDelivered && <MarkAsDeliveredButton />
+              }
             </CardContent>
           </Card>
         </div>

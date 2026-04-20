@@ -5,6 +5,7 @@ import {convertToPlainObject, formatError} from '../utils';
 import {LATEST_PRODUCTS_LIMIT, PAGE_SIZE} from '../constants'
 import { revalidatePath } from 'next/cache';
 import { insertProductSchema, updateProductSchema } from '../validators';
+import { Prisma } from '@prisma/client';
 import z from 'zod';
 
 // Get latest products
@@ -37,13 +38,23 @@ export async function getAllProducts({
   page: number;
   category: string;
 }) {
+  const where: Prisma.ProductWhereInput = {
+    ...(query && {
+      name: {
+        contains: query,
+        mode: 'insensitive',
+      },
+    }),
+    ...(category && category !== 'all' && { category }),
+  };
 
   const data = await prisma.product.findMany({
+    where,
     skip: (page - 1) * limit,
     take: limit,
   });
 
-  const dataCount = await prisma.product.count();
+  const dataCount = await prisma.product.count({ where });
 
   return {
     data,

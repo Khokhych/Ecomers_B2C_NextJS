@@ -39,15 +39,12 @@ const ProductForm = ({
   const router = useRouter();
 
   const form = useForm<z.infer<typeof insertProductSchema>>({
-    resolver:
-      type === 'Update'
-        ? zodResolver(updateProductSchema)
-        : zodResolver(insertProductSchema),
-    defaultValues: product && type === 'Update' ? product : productDefaultValues,
+    resolver: zodResolver(type === 'Update' ? updateProductSchema : insertProductSchema),
+    defaultValues: product || productDefaultValues,
   });
 
   // Handle form submit
-  const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema>> = async (
+  const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema | typeof updateProductSchema>> = async (
     values
   ) => {
     if (type === 'Create') {

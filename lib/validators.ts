@@ -61,7 +61,7 @@ export const insertCartSchema = z.object({
   userId: z.string().optional().nullable(),
 });
 
-// Schema for Shipping Address 
+// Schema for Shipping Address
 export const shippingAddressSchema = z.object({
   fullName: z.string().min(3, 'Name must be at least 3 characters'),
   streetAddress: z.string().min(3, 'Address must be at least 3 characters'),
@@ -121,4 +121,11 @@ export const updateProfileSchema = z.object({
 // Schema for updating a product
 export const updateProductSchema = insertProductSchema.extend({
   id: z.string().min(1, 'Id is required'),
+});
+
+// Update User Schema
+export const updateUserSchema = updateProfileSchema.extend({
+  id: z.string().min(1, 'Id is required'),
+  name: z.string().min(3, 'Name must be at least 3 characters'),
+  role: z.string().min(1, 'Role is required'),
 });

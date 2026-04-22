@@ -1,8 +1,8 @@
 import { APP_NAME } from '@/lib/constants';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input';
 import Menu from '@/components/shared/header/menu';
+import AdminSearch from '@/components/shared/admin/admin-search';
 import { MainNav } from './main-nav';
 
 export default async function AdminLayout({
@@ -12,33 +12,35 @@ export default async function AdminLayout({
 }) {
   return (
     <>
-      <div className='flex flex-col'>
-        <div className='border-b container mx-auto'>
-          <div className='flex h-16 items-center px-4'>
-            <Link href='/' className='w-22'>
-              <Image
-                src='/images/logo.svg'
-                width={48}
-                height={48}
-                alt={`${APP_NAME} logo`}
-              />
-            </Link>
-            <MainNav className='mx-6' />;
-            <div className='ml-auto flex items-center space-x-4'>
-              <div>
-                <Input
-                  type='search'
-                  placeholder='Search...'
-                  className='md:w-[100px] lg:w-[300px]'
-                />
+      <div className="flex h-screen flex-col">
+          <header className="w-full border-b">
+            <div className="wrapper flex-between">
+              <div className="flex-start">
+                <Link href="/" className="flex-start">
+                  <Image
+                    src="/images/logo.svg"
+                    alt={`${APP_NAME} Logo`}
+                    width={40}
+                    height={40}
+                  />
+                  <span className='hidden lg:block font-bold text-2xl ml-3'>
+                    {APP_NAME}
+                  </span>
+                </Link>
               </div>
-              <Menu />
+              <MainNav className='mx-6' />
+              <div className='ml-auto flex items-center space-x-4'>
+                <AdminSearch />
+                <Menu />
+              </div>
             </div>
-          </div>
-        </div>
-        <div className='flex-1 space-y-4 p-8 pt-6 container mx-auto'>
-          {children}
-        </div>
+          </header>
+          <main className="wrapper flex-1">
+            <div className='my-10 w-full'>
+              {children}
+            </div>
+          </main>
+        {/* </div> */}
       </div>
     </>
   );

@@ -87,7 +87,7 @@ const SearchPage = async (props: {
 
   return (
     <div className='grid md:grid-cols-5 md:gap-5'>
-      <div className='filter-links'>
+      <div className='md:col-span-1'>
         {/* Category Links */}
         <div>
         <div className='text-xl mt-3 mb-2'>Department</div>
@@ -187,7 +187,17 @@ const SearchPage = async (props: {
           </div>
           <div>{/* SORTING HERE */}</div>
         </div>
+        <div>
+          {products.data.length === 0 && <div>No Product Found</div>}
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4'>
+            {products.data.map((product) => (
+              <ProductCard key={product.slug} product={product} />
+            ))}
+          </div>
+          <Pagination page={Number(page) || 1} totalPages={products?.totalPages} />
+        </div>
       </div>
+
     </div>
   );
 };

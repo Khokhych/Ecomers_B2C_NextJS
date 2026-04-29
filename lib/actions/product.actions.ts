@@ -32,29 +32,61 @@ export async function getAllProducts({
   limit = PAGE_SIZE,
   page,
   category,
+  price,
+  rating,
+  sort,
 }: {
   query: string;
+  category: string;
   limit?: number;
   page: number;
-  category: string;
+  price?: string;
+  rating?: string;
+  sort?: string;
 }) {
-  const where: Prisma.ProductWhereInput = {
-    ...(query && {
-      name: {
-        contains: query,
-        mode: 'insensitive',
-      },
-    }),
-    ...(category && category !== 'all' && { category }),
-  };
 
+  // Filter by query
+  const queryFilter: Prisma.ProductWhereInput =
+    query && query !== 'all'
+      ? {
+          name: {
+            contains: query,
+            mode: 'insensitive',
+          } as Prisma.StringFilter,
+        }
+      : {};
+
+  // Filter by category
+  const categoryFilter = category && category !== 'all' ? { category } : {};
+
+  // Filter by price
+  const priceFilter: Prisma.ProductWhereInput =
+    price && price !== 'all'
+      ? {
+          price: {
+            gte: Number(price.split('-')[0]),
+            lte: Number(price.split('-')[1]),
+          },
+        }
+      : {};
+
+  // Filter by rating
+  const ratingFilter =
+    rating && rating !== 'all' ? { rating: { gte: Number(rating) } } : {};
+
+  // Fetch products
   const data = await prisma.product.findMany({
-    where,
+    where: {
+      ...queryFilter,
+      ...categoryFilter,
+      ...priceFilter,
+      ...ratingFilter,
+    },
     skip: (page - 1) * limit,
     take: limit,
   });
 
-  const dataCount = await prisma.product.count({ where });
+  const dataCount = await prisma.product.count({ where: { ...queryFilter, ...categoryFilter, ...priceFilter, ...ratingFilter } });
 
   return {
     data,

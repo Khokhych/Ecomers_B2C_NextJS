@@ -10,12 +10,13 @@ import {
 import ProductCarousel from '@/components/shared/product/product-carousel';
 
 const  Homepage = async () => {
-  const products = await getLatestProducts();
+  const featuredProducts = await getFeaturedProducts();
+  const latestProducts = await getLatestProducts();
 
   return (
     <>
-      <ProductCarousel data={products} />
-      <ProductList title='Newest Arrivals' data={products} limit={4} />
+      <ProductCarousel data={featuredProducts} />
+      <ProductList title='Newest Arrivals' data={latestProducts} limit={4} />
       <ViewAllProductsButton />
     </>
   );

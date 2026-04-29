@@ -30,6 +30,8 @@ const prices = [
   },
 ];
 
+const sortOrders = ['newest', 'lowest', 'highest', 'rating'];
+
 const ratings = [4, 3, 2, 1];
 
 const SearchPage = async (props: {
@@ -185,7 +187,17 @@ const SearchPage = async (props: {
               </Button>
             ) : null}
           </div>
-          <div>{/* SORTING HERE */}</div>
+          <div>Sort by{' '}
+            {sortOrders.map((s) => (
+              <Link
+                key={s}
+                className={`mx-2   ${sort == s && 'font-bold'} `}
+                href={getFilterUrl({ s })}
+              >
+                {s}
+              </Link>
+            ))}
+          </div>
         </div>
         <div>
           {products.data.length === 0 && <div>No Product Found</div>}

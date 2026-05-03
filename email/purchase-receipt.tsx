@@ -96,7 +96,7 @@ export default function PurchaseReceiptEmail({ order }: {order: Order}) {
                     Price Paid
                   </Text>
                   <Text className='mt-0 mr-4'>
-                    {formatCurrency(order.totalPrice)}
+                    {formatCurrency(order.totalPrice.toString())}
                   </Text>
                 </Column>
               </Row>
@@ -122,7 +122,7 @@ export default function PurchaseReceiptEmail({ order }: {order: Order}) {
                     </Text>
                   </Column>
                   <Column align='right' className='align-top'>
-                    <Text className='m-0 '>{formatCurrency(item.price)}</Text>
+                    <Text className='m-0 '>{formatCurrency(item.price.toString())}</Text>
                   </Column>
                 </Row>
               ))}
@@ -135,7 +135,7 @@ export default function PurchaseReceiptEmail({ order }: {order: Order}) {
                 <Row key={name} className='py-1'>
                   <Column align='right'>{name}:</Column>
                   <Column align='right' width={70} className='align-top'>
-                    <Text className='m-0'>{formatCurrency(price)}</Text>
+                    <Text className='m-0'>{formatCurrency(price.toString())}</Text>
                   </Column>
                 </Row>
               ))}

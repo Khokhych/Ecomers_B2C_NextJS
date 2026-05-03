@@ -1,3 +1,4 @@
+export const DEV_SETUP = process.env.DEV_SETUP === 'true';
 export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "ProStore";
 export const APP_DESCRIPTION = process.env.NEXT_PUBLIC_APP_DESCRIPTION || "Best online store";
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001/";
@@ -52,3 +53,6 @@ export const USER_ROLES = process.env.USER_ROLES
 
 export const SENDER_EMAIL =
   process.env.SENDER_EMAIL || 'onboarding@resend.dev';
+
+export const EMAIL_TO =
+  process.env.EMAIL_TO || 'no-reply@example.com';

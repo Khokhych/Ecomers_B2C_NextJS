@@ -7,7 +7,8 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { getAllCategories } from '@/lib/actions/product.actions';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { MenuIcon } from 'lucide-react';
 import Link from 'next/link';
 
@@ -16,28 +17,25 @@ const CategoriesDrawer = async () => {
 
   return (
     <Drawer direction='left'>
-      <DrawerTrigger asChild>
-        <Button variant='outline'>
-          <MenuIcon />
-        </Button>
+      <DrawerTrigger className={buttonVariants({ variant: 'outline' })}>
+        <MenuIcon />
       </DrawerTrigger>
       <DrawerContent className='h-full max-w-sm'>
         <DrawerHeader>
           <DrawerTitle>Select a category</DrawerTitle>
           <div className='space-y-1'>
             {categories.map((x) => (
-              <Button
-                className='w-full justify-start'
-                variant='ghost'
-                key={x.category}
-                asChild
-              >
-                <DrawerClose asChild>
-                  <Link href={`/search?category=${x.category}`}>
-                    {x.category} ({x._count})
-                  </Link>
-                </DrawerClose>
-              </Button>
+              <DrawerClose asChild key={x.category}>
+                <Link
+                  className={cn(
+                    buttonVariants({ variant: 'ghost' }),
+                    'w-full justify-start'
+                  )}
+                  href={`/search?category=${x.category}`}
+                >
+                  {x.category} ({x._count})
+                </Link>
+              </DrawerClose>
             ))}
           </div>
         </DrawerHeader>

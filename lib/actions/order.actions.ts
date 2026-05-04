@@ -7,7 +7,7 @@ import { getMyCart } from './cart.actions';
 import { getUserById } from './user.actions';
 import { insertOrderSchema } from '../validators';
 import { prisma } from '@/db/prisma';
-import { CartItem, PaymentResult, ShippingAddress } from '@/types';
+import { CartItem, Order, PaymentResult, ShippingAddress } from '@/types';
 import { convertToPlainObject } from '../utils';
 import { revalidatePath } from 'next/cache';
 import { paypal } from '../paypal';
@@ -240,13 +240,32 @@ export async function updateOrderToPaid({
     throw new Error('Order not found');
   }
 
+  // Normalize Prisma decimals and JSON fields to the app Order shape.
+  const orderForEmail: Order = {
+    id: updatedOrder.id,
+    userId: updatedOrder.userId,
+    paymentMethod: updatedOrder.paymentMethod,
+    itemsPrice: updatedOrder.itemsPrice.toString(),
+    shippingPrice: updatedOrder.shippingPrice.toString(),
+    taxPrice: updatedOrder.taxPrice.toString(),
+    totalPrice: updatedOrder.totalPrice.toString(),
+    shippingAddress: updatedOrder.shippingAddress as ShippingAddress,
+    createdAt: updatedOrder.createdAt,
+    isPaid: updatedOrder.isPaid,
+    paidAt: updatedOrder.paidAt,
+    isDelivered: updatedOrder.isDelivered,
+    deliveredAt: updatedOrder.deliveredAt,
+    orderItems: updatedOrder.orderItems.map((item) => ({
+      ...item,
+      price: item.price.toString(),
+    })),
+    user: updatedOrder.user,
+    paymentResult: updatedOrder.paymentResult as PaymentResult,
+  };
+
   // Send the purchase receipt email with the updated order
   sendPurchaseReceipt({
-    order: {
-      ...updatedOrder,
-      shippingAddress: updatedOrder.shippingAddress as ShippingAddress,
-      paymentResult: updatedOrder.paymentResult as PaymentResult,
-    },
+    order: orderForEmail,
   });
 };
 

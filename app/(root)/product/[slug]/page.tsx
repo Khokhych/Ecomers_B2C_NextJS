@@ -41,9 +41,6 @@ const PDP = async (
                 {product.brand} {product.category}
               </p>
               <h1 className='h3-bold'>{product.name}</h1>
-              <p>
-                {product.rating} of {product.numReviews} reviews
-              </p>
 
               <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
                   <ProductPrice

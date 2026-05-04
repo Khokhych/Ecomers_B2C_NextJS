@@ -13,7 +13,6 @@ export type PaymentResult = z.infer<typeof paymentResultSchema>;
 
 export type Product = z.infer<typeof insertProductSchema> &{
   id: string;
-  rating: string;
   createdAt: Date;
 }
 

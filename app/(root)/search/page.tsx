@@ -30,38 +30,32 @@ const prices = [
   },
 ];
 
-const sortOrders = ['newest', 'lowest', 'highest', 'rating'];
-
-const ratings = [4, 3, 2, 1];
+const sortOrders = ['newest', 'lowest', 'highest'];
 
 export async function generateMetadata(props: {
   searchParams: Promise<{
     q: string;
     category: string;
     price: string;
-    rating: string;
   }>;
 }) {
   const {
     q = 'all',
     category = 'all',
     price = 'all',
-    rating = 'all',
   } = await props.searchParams;
 
   const isQuerySet = q && q !== 'all' && q.trim() !== '';
   const isCategorySet = category && category !== 'all' && category.trim() !== '';
   const isPriceSet = price && price !== 'all' && price.trim() !== '';
-  const isRatingSet = rating && rating !== 'all' && rating.trim() !== '';
 
-  if (isQuerySet || isCategorySet || isPriceSet || isRatingSet) {
+  if (isQuerySet || isCategorySet || isPriceSet) {
     return {
       title: `Search ${
         isQuerySet ? q : ''
       }
       ${isCategorySet ? `: Category ${category}` : ''}
-      ${isPriceSet ? `: Price ${price}` : ''}
-      ${isRatingSet ? `: Rating ${rating}` : ''}`,
+      ${isPriceSet ? `: Price ${price}` : ''}`,
     };
   } else {
     return {
@@ -75,7 +69,6 @@ const SearchPage = async (props: {
     q?: string;
     category?: string;
     price?: string;
-    rating?: string;
     sort?: string;
     page?: string;
   }>;
@@ -84,7 +77,6 @@ const SearchPage = async (props: {
     q = 'all',
     category = 'all',
     price = 'all',
-    rating = 'all',
     sort = 'newest',
     page = '1',
   } = await props.searchParams;
@@ -93,7 +85,6 @@ const SearchPage = async (props: {
     category,
     query: q,
     price,
-    rating,
     page: Number(page),
     sort,
   });
@@ -112,10 +103,9 @@ const SearchPage = async (props: {
     r?: string;
     pg?: string;
   }) => {
-    const params = { q, category, price, rating, sort, page };
+    const params = { q, category, price, sort, page };
     if (c) params.category = c;
     if (p) params.price = p;
-    if (r) params.rating = r;
     if (pg) params.page = pg;
     if (s) params.sort = s;
     return `/search?${new URLSearchParams(params).toString()}`;
@@ -178,32 +168,6 @@ const SearchPage = async (props: {
             ))}
           </ul>
         </div>
-        {
-          /* Rating Links */
-        }
-        <div>
-          <div className='text-xl mt-8 mb-2'>Customer Review</div>
-          <ul className='space-y-1'>
-            <li>
-              <Link
-                href={getFilterUrl({ r: 'all' })}
-                className={`  ${'all' === rating && 'font-bold'}`}
-              >
-                Any
-              </Link>
-            </li>
-            {ratings.map((r) => (
-              <li key={r}>
-                <Link
-                  href={getFilterUrl({ r: `${r}` })}
-                  className={`${r.toString() === rating && 'font-bold'}`}
-                >
-                  {`${r} stars & up`}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
 
       <div className='md:col-span-4 space-y-4'>
@@ -212,11 +176,9 @@ const SearchPage = async (props: {
             {q !== 'all' && q !== '' && 'Query : ' + q}
             {category !== 'all' && category !== '' && '   Category : ' + category}
             {price !== 'all' && '    Price: ' + price}
-            {rating !== 'all' && '    Rating: ' + rating + ' & up'}
             &nbsp;
             {(q !== 'all' && q !== '') ||
             (category !== 'all' && category !== '') ||
-            rating !== 'all' ||
             price !== 'all' ? (
               <Button variant={'link'} asChild>
                 <Link href='/search'>Clear</Link>

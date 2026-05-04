@@ -26,6 +26,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { UploadButton } from '@/lib/uploadthing';
+import { X } from 'lucide-react';
 
 const ProductForm = ({
   type,
@@ -67,6 +68,17 @@ const ProductForm = ({
       }
     }
   };
+
+  // Remove image
+  const removeImage = (image: string) => {
+    const images = form.getValues('images');
+    form.setValue('images', images.filter((img: string) => img !== image));
+  }
+
+  // Remove banner
+  const removeBanner = () => {
+    form.setValue('banner', '');
+  }
 
   const images = form.watch('images');
   const isFeatured = form.watch('isFeatured');
@@ -279,14 +291,19 @@ const ProductForm = ({
                   <CardContent className='space-y-2 mt-2 min-h-16'>
                     <div className='flex-start space-x-2'>
                       {images.map((image: string) => (
-                        <Image
-                          key={image}
-                          src={image}
-                          alt='product image'
-                          className='w-20 h-20 object-cover object-center rounded-sm'
-                          width={100}
-                          height={100}
-                        />
+                        <div key={image} className="relative">
+                          <X
+                            onClick={() => removeImage(image)}
+                            className="text-gray-900 absolute top-1 right-1 bg-red-500 rounded-full w-5 h-5 flex items-center justify-center cursor-pointer opacity-65 hover:opacity-100 transition-opacity"
+                          />
+                          <Image
+                            src={image}
+                            alt='product image'
+                            className='w-20 h-20 object-cover object-center rounded-sm'
+                            width={100}
+                            height={100}
+                          />
+                        </div>
                       ))}
                       <FormControl>
                         <UploadButton
@@ -316,24 +333,30 @@ const ProductForm = ({
                 name='isFeatured'
                 render={({ field }) => (
                   <FormItem className='space-x-2 items-center'>
+                    <FormLabel>Is Featured?</FormLabel>
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormLabel>Is Featured?</FormLabel>
                   </FormItem>
                 )}
               />
               {isFeatured && banner && (
-                <Image
-                  src={banner}
-                  alt='banner image'
-                  className=' w-full object-cover object-center rounded-sm'
-                  width={1920}
-                  height={680}
-                />
+                <div className="relative">
+                  <X
+                    onClick={() => removeBanner()}
+                    className="text-gray-900 absolute top-1 right-1 bg-red-500 rounded-full w-5 h-5 flex items-center justify-center cursor-pointer opacity-65 hover:opacity-100 transition-opacity"
+                  />
+                  <Image
+                    src={banner}
+                    alt='banner image'
+                    className=' w-full object-cover object-center rounded-sm'
+                    width={1920}
+                    height={680}
+                  />
+                </div>
               )}
               {isFeatured && !banner && (
                 <UploadButton

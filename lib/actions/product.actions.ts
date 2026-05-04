@@ -124,6 +124,14 @@ export async function deleteProduct(id: string) {
   }
 }
 
+// Get Product by ID
+export async function getProductById(id: string) {
+  const product = await prisma.product.findUnique({
+    where: { id },
+  });
+  return convertToPlainObject(product);
+}
+
 // Create Product
 export async function createProduct(data: z.infer<typeof insertProductSchema>) {
   try {

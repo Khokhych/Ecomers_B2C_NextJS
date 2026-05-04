@@ -4,12 +4,15 @@ import Link from 'next/link';
 import Menu from '@/components/shared/header/menu';
 import AdminSearch from '@/components/shared/admin/admin-search';
 import { MainNav } from './main-nav';
+import { requireAdmin } from '@/lib/auth-guard';
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await requireAdmin();
+
   return (
     <>
       <div className="flex h-screen flex-col">
